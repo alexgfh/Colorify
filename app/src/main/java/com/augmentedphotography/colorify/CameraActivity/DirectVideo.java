@@ -11,20 +11,32 @@ import java.nio.ShortBuffer;
 /**
  * Created by Alex on 5/21/2015.
  */
-public class DirectVideo
-{
+public class DirectVideo {
+    // number of coordinates per vertex in this array
+    private static final int COORDS_PER_VERTEX = 2;
+    static float squareCoords[] = {
+            -1.0f, 1.0f,
+            -1.0f, -1.0f,
+            1.0f, -1.0f,
+            1.0f, 1.0f,
+    };
+    static float textureVertices[] = {
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            1.0f, 0.0f,
+            0.0f, 0.0f,
+    };
     private static String LOG_TAG = "DirectVideo";
     private final String vertexShaderCode =
             "attribute vec4 vPosition;\n" +
                     "attribute vec2 inputTextureCoordinate;\n" +
                     "varying vec2 textureCoordinate;\n" +
                     "void main() {\n" +
-                    "  gl_Position = vPosition;\n"+
+                    "  gl_Position = vPosition;\n" +
                     "  textureCoordinate = inputTextureCoordinate;\n" +
                     "}\n";
-
     private final String fragmentShaderCode =
-            "#extension GL_OES_EGL_image_external : require\n"+
+            "#extension GL_OES_EGL_image_external : require\n" +
                     "precision mediump float;\n" +
                     "varying vec2 textureCoordinate;\n" +
                     "uniform float threshold;\n" +
@@ -59,50 +71,14 @@ public class DirectVideo
                     "    gl_FragColor = vec4(frag, 1.0);\n" +
                     "  }\n" +
                     "}\n";
-
+    private final int mProgram;
+    private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
     private FloatBuffer vertexBuffer, textureVerticesBuffer;
     private ShortBuffer drawListBuffer;
-    private final int mProgram;
-
-    private short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // order to draw vertices
-
-    // number of coordinates per vertex in this array
-    private static final int COORDS_PER_VERTEX = 2;
-
-    private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
-
-    static float squareCoords[] = {
-            -1.0f,  1.0f,
-            -1.0f, -1.0f,
-            1.0f, -1.0f,
-            1.0f,  1.0f,
-    };
-
-    static float textureVertices[] = {
-            0.0f, 1.0f,
-            1.0f, 1.0f,
-            1.0f, 0.0f,
-            0.0f, 0.0f,
-    };
-
+    private short drawOrder[] = {0, 1, 2, 0, 2, 3}; // order to draw vertices
     private int texture;
 
-    private static int loadShader(int type, String shaderCode){
-
-        // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
-        // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
-        int shader = GLES20.glCreateShader(type);
-
-        // add the source code to the shader and compile it
-        GLES20.glShaderSource(shader, shaderCode);
-        GLES20.glCompileShader(shader);
-        //String msg = GLES20.glGetShaderInfoLog(shader);
-        //Log.v(LOG_TAG, msg);
-        return shader;
-    }
-
-    public DirectVideo(int texture)
-    {
+    public DirectVideo(int texture) {
         this.texture = texture;
 
         // initialize vertex byte buffer for shape coordinates
@@ -125,8 +101,8 @@ public class DirectVideo
         textureVerticesBuffer.put(textureVertices);
         textureVerticesBuffer.position(0);
 
-        int vertexShader    = loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);
-        int fragmentShader  = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
+        int vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);
+        int fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
 
         mProgram = GLES20.glCreateProgram();             // create empty OpenGL ES Program
         GLES20.glAttachShader(mProgram, vertexShader);   // add the vertex shader to program
@@ -134,8 +110,21 @@ public class DirectVideo
         GLES20.glLinkProgram(mProgram);                  // creates OpenGL ES program executables
     }
 
-    public void draw(float referenceHue, float threshold, float[] transform)
-    {
+    private static int loadShader(int type, String shaderCode) {
+
+        // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
+        // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
+        int shader = GLES20.glCreateShader(type);
+
+        // add the source code to the shader and compile it
+        GLES20.glShaderSource(shader, shaderCode);
+        GLES20.glCompileShader(shader);
+        //String msg = GLES20.glGetShaderInfoLog(shader);
+        //Log.v(LOG_TAG, msg);
+        return shader;
+    }
+
+    public void draw(float referenceHue, float threshold, float[] transform) {
         GLES20.glUseProgram(mProgram);
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 

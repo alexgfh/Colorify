@@ -11,24 +11,21 @@ import java.io.IOException;
  */
 
 @SuppressWarnings("deprecation")
-public class CameraFeed
-{
+public class CameraFeed {
     private static String LOG_TAG = "CameraManager";
     private boolean running = false;
     private Camera mainCamera;
 
-    void start(SurfaceTexture surface)
-    {
+    void start(SurfaceTexture surface) {
         Log.v(LOG_TAG, "Starting Camera");
 
         try {
             mainCamera = Camera.open();
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             Log.e(LOG_TAG, "no camera");
         }
         Camera.Parameters cameraParameters = mainCamera.getParameters();
-        Log.v(LOG_TAG,cameraParameters.getPreviewSize().width + " x " + cameraParameters.getPreviewSize().height);
+        Log.v(LOG_TAG, cameraParameters.getPreviewSize().width + " x " + cameraParameters.getPreviewSize().height);
 
         try {
             mainCamera.setPreviewTexture(surface);
@@ -39,8 +36,7 @@ public class CameraFeed
         }
     }
 
-    void stop()
-    {
+    void stop() {
         if (running) {
             Log.v(LOG_TAG, "Stopping Camera");
             mainCamera.stopPreview();

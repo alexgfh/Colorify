@@ -18,7 +18,7 @@ import android.widget.Toast;
 import com.augmentedphotography.colorify.R;
 
 
-public class CameraActivity extends Activity{
+public class CameraActivity extends Activity {
     private static final String LOG_TAG = "CameraActivity";
     private CameraFeed cameraFeed;
     private CameraPreviewSurfaceView renderedView;
@@ -36,19 +36,19 @@ public class CameraActivity extends Activity{
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         cameraFeed = new CameraFeed();
-        LayoutInflater inflater = (LayoutInflater)this.getSystemService
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService
                 (Context.LAYOUT_INFLATER_SERVICE);
-        layout = (RelativeLayout)inflater.inflate(R.layout.activity_camera, null);
+        layout = (RelativeLayout) inflater.inflate(R.layout.activity_camera, null);
         renderedView = new CameraPreviewSurfaceView(this, cameraFeed);
         layout.addView(renderedView, 0);
         setContentView(layout);
-        resetButton = (Button)findViewById(R.id.reset_button);
+        resetButton = (Button) findViewById(R.id.reset_button);
         thresholdBar = (SeekBar) findViewById(R.id.threshold_bar);
         thresholdBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                renderedView.setThreshold((float)progress);
-                Toast.makeText(CameraActivity.this, ""+progress, Toast.LENGTH_SHORT).show();
+                renderedView.setThreshold((float) progress);
+                Toast.makeText(CameraActivity.this, "" + progress, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -63,10 +63,10 @@ public class CameraActivity extends Activity{
         });
         thresholdBar.setMax(360);
         thresholdBar.setProgress(360);
-        if(resetButton == null) {
+        if (resetButton == null) {
             throw new RuntimeException("resetButton is null");
         }
-        if(thresholdBar == null) {
+        if (thresholdBar == null) {
             throw new RuntimeException("thresholdBar is null");
         }
     }
@@ -98,8 +98,7 @@ public class CameraActivity extends Activity{
     }
 
     @Override
-    protected void onPause()
-    {
+    protected void onPause() {
         super.onPause();
         cameraFeed.stop();
     }

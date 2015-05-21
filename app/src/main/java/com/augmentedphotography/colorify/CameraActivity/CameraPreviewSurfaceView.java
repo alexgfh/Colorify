@@ -31,13 +31,11 @@ public class CameraPreviewSurfaceView extends GLSurfaceView implements GLSurface
     private float threshold = 360.0f; //unreachable threshold
     private Point selectedPosition = new Point();
 
-    public CameraPreviewSurfaceView(Context context)
-    {
+    public CameraPreviewSurfaceView(Context context) {
         this(context, null);
     }
 
-    public CameraPreviewSurfaceView(Context context, CameraFeed camera)
-    {
+    public CameraPreviewSurfaceView(Context context, CameraFeed camera) {
         super(context);
 
         this.cameraFeed = camera;
@@ -47,16 +45,15 @@ public class CameraPreviewSurfaceView extends GLSurfaceView implements GLSurface
     }
 
     @Override
-    public void onDrawFrame(GL10 gl)
-    {
+    public void onDrawFrame(GL10 gl) {
         float[] mtx = new float[16];
         mSurface.updateTexImage();
         mSurface.getTransformMatrix(mtx);
 
         //TODO: Make UI for selecting threshold
 
-        directVideo.draw(selectedHue/360.0f, threshold/360.0f, mtx);
-        if(reselectColor) {
+        directVideo.draw(selectedHue / 360.0f, threshold / 360.0f, mtx);
+        if (reselectColor) {
             selectedColor = getGLPixel(selectedPosition.x, selectedPosition.y);
             float[] hsv = new float[3];
             //Color.RGBToHSV(((selectedColor >> 16) & 0xFF), ((selectedColor>>8) & 0xFF), (selectedColor & 0xFF), hsv);
@@ -76,15 +73,13 @@ public class CameraPreviewSurfaceView extends GLSurfaceView implements GLSurface
     }
 
     @Override
-    public void onSurfaceChanged(GL10 gl, int width, int height)
-    {
+    public void onSurfaceChanged(GL10 gl, int width, int height) {
         Log.v(LOG_TAG, "Surface Changed");
         GLES20.glViewport(0, 0, width, height);
     }
 
     @Override
-    public void onSurfaceCreated(GL10 gl, EGLConfig config)
-    {
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         Log.v(LOG_TAG, "Surface Created");
         int texture = createTexture();
         directVideo = new DirectVideo(texture);
@@ -93,8 +88,7 @@ public class CameraPreviewSurfaceView extends GLSurfaceView implements GLSurface
         cameraFeed.start(mSurface);
     }
 
-    private int createTexture()
-    {
+    private int createTexture() {
         int[] textures = new int[1];
 
         // generate one texture pointer and bind it as an external texture.
@@ -124,12 +118,12 @@ public class CameraPreviewSurfaceView extends GLSurfaceView implements GLSurface
         if (event.getActionMasked() == MotionEvent.ACTION_UP) {
             return true;
         }
-        int x = (int)event.getX();
-        int y = (int)event.getY();
+        int x = (int) event.getX();
+        int y = (int) event.getY();
         selectedPosition.x = x;
-        selectedPosition.y = getHeight()-y;
+        selectedPosition.y = getHeight() - y;
         reselectColor = true;
-        Log.d(LOG_TAG,""+x + ',' +y);
+        Log.d(LOG_TAG, "" + x + ',' + y);
         return true;
     }
 
