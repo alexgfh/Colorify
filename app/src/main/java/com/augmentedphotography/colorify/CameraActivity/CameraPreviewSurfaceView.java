@@ -56,12 +56,11 @@ public class CameraPreviewSurfaceView extends GLSurfaceView implements GLSurface
         if (reselectColor) {
             selectedColor = getGLPixel(selectedPosition.x, selectedPosition.y);
             float[] hsv = new float[3];
-            //Color.RGBToHSV(((selectedColor >> 16) & 0xFF), ((selectedColor>>8) & 0xFF), (selectedColor & 0xFF), hsv);
-            Color.RGBToHSV(0, 255, 0, hsv);
+            Color.RGBToHSV((selectedColor & 0xFF), ((selectedColor>>8) & 0xFF), ((selectedColor>>16) & 0xFF), hsv);
             selectedHue = hsv[0];
             reselectColor = false;
-            //String msg = "(" + (selectedColor & 0xFF) + ',' + ((selectedColor>>8) & 0xFF) + ',' + ((selectedColor>>16) & 0xFF) + ')';
-            //Log.d(LOG_TAG,msg);
+            String msg = "(" + (selectedColor & 0xFF) + ',' + ((selectedColor>>8) & 0xFF) + ',' + ((selectedColor>>16) & 0xFF) + ')';
+            Log.d(LOG_TAG,msg);
         }
     }
 
@@ -105,10 +104,6 @@ public class CameraPreviewSurfaceView extends GLSurfaceView implements GLSurface
         return textures[0];
     }
 
-    void setColor(int color) {
-        this.selectedColor = color;
-    }
-
     void setThreshold(float threshold) {
         this.threshold = threshold;
     }
@@ -123,7 +118,6 @@ public class CameraPreviewSurfaceView extends GLSurfaceView implements GLSurface
         selectedPosition.x = x;
         selectedPosition.y = getHeight() - y;
         reselectColor = true;
-        Log.d(LOG_TAG, "" + x + ',' + y);
         return true;
     }
 

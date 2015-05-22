@@ -13,19 +13,34 @@
         android:layout_height="wrap_content"
         android:text="@string/reset_button_text"
         android:id="@+id/reset_button"
-        android:layout_alignParentBottom="true"
         android:onClick="reset"
-        android:alpha="0.5" />
-
-    <SeekBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/threshold_bar"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:alpha="0.6"
+        android:alpha="0.5"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <SeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/threshold_bar"
+        android:alpha="0.6"
+        android:rotation="0"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/shutter_button"
+        style="@style/Widget.AppCompat.Button"
+        android:onClick="captureFrame"
+        android:nestedScrollingEnabled="true"
+        android:contentDescription="@string/take_picture"
+        android:alpha="0.5"
+        android:background="@drawable/abc_btn_radio_to_on_mtrl_015"
+        android:layout_alignTop="@+id/reset_button"
+        android:layout_centerHorizontal="true"
+        android:clickable="true" />
 
 </RelativeLayout>

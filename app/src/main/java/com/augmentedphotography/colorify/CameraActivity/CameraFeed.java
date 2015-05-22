@@ -1,5 +1,6 @@
 package com.augmentedphotography.colorify.CameraActivity;
 
+import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.util.Log;
@@ -15,6 +16,11 @@ public class CameraFeed {
     private static String LOG_TAG = "CameraManager";
     private boolean running = false;
     private Camera mainCamera;
+    private Context context;
+
+    CameraFeed(Context context) {
+        this.context = context;
+    }
 
     void start(SurfaceTexture surface) {
         Log.v(LOG_TAG, "Starting Camera");
@@ -34,6 +40,25 @@ public class CameraFeed {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    void capture() {
+        mainCamera.takePicture(new Camera.ShutterCallback() {
+            @Override
+            public void onShutter() {
+            }
+        }, new Camera.PictureCallback() {
+            @Override
+            public void onPictureTaken(byte[] data, Camera camera) {
+                /*int w = camera.getParameters().getPictureSize().width;
+                int h = camera.getParameters().getPictureSize().height;
+                Bitmap bm = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                bm.copyPixelsFromBuffer(ByteBuffer.wrap(data));
+                MediaStore.Images.Media.insertImage(context.getContentResolver(), bm, "myPicture", "none");
+                */
+            }
+        }, null
+        );
     }
 
     void stop() {

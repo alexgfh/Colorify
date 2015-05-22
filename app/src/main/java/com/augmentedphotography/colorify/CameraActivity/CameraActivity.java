@@ -2,7 +2,6 @@ package com.augmentedphotography.colorify.CameraActivity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,7 +12,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.Toast;
 
 import com.augmentedphotography.colorify.R;
 
@@ -26,8 +24,7 @@ public class CameraActivity extends Activity {
     private SeekBar thresholdBar;
     private RelativeLayout layout;
 
-    private void setupCamera(SurfaceTexture surface) {
-    }
+    //TODO: Create hue selector (get color from hue bitmap itself?)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +32,7 @@ public class CameraActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        cameraFeed = new CameraFeed();
+        cameraFeed = new CameraFeed(this);
         LayoutInflater inflater = (LayoutInflater) this.getSystemService
                 (Context.LAYOUT_INFLATER_SERVICE);
         layout = (RelativeLayout) inflater.inflate(R.layout.activity_camera, null);
@@ -48,7 +45,6 @@ public class CameraActivity extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 renderedView.setThreshold((float) progress);
-                Toast.makeText(CameraActivity.this, "" + progress, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -61,8 +57,8 @@ public class CameraActivity extends Activity {
 
             }
         });
-        thresholdBar.setMax(360);
-        thresholdBar.setProgress(360);
+        thresholdBar.setMax(100);
+        thresholdBar.setProgress(100);
         if (resetButton == null) {
             throw new RuntimeException("resetButton is null");
         }
@@ -71,8 +67,13 @@ public class CameraActivity extends Activity {
         }
     }
 
+    public void captureFrame(View view) {
+        cameraFeed.capture();
+    }
+
     public void reset(View view) {
-        thresholdBar.setProgress(360);
+        thresholdBar.setProgress(100);
+        renderedView.setThreshold(360.0f);
     }
 
     @Override
