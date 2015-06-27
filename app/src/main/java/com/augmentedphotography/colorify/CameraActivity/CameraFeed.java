@@ -56,6 +56,8 @@ public class CameraFeed {
                 bm.copyPixelsFromBuffer(ByteBuffer.wrap(data));
                 MediaStore.Images.Media.insertImage(context.getContentResolver(), bm, "myPicture", "none");
                 */
+                //preview stops after taking a picture
+                mainCamera.startPreview();
             }
         }, null
         );
