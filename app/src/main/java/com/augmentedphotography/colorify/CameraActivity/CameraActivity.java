@@ -2,7 +2,11 @@ package com.augmentedphotography.colorify.CameraActivity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,9 +19,11 @@ import android.widget.SeekBar;
 
 import com.augmentedphotography.colorify.R;
 
+import java.io.File;
+
 
 public class CameraActivity extends Activity {
-    private static final String LOG_TAG = "CameraActivity";
+    private static final String TAG = "CameraActivity";
     private CameraFeed cameraFeed;
     private CameraPreviewSurfaceView renderedView;
     private Button resetButton;
@@ -67,8 +73,49 @@ public class CameraActivity extends Activity {
         }
     }
 
+    private Bitmap loadBitmapFromView(View v) {
+        v.clearFocus();
+        v.setPressed(false);
+
+        boolean willNotCache = v.willNotCacheDrawing();
+        v.setWillNotCacheDrawing(false);
+
+        // Reset the drawing cache background color to fully transparent
+        // for the duration of this operation
+        int color = v.getDrawingCacheBackgroundColor();
+        v.setDrawingCacheBackgroundColor(0);
+
+        if (color != 0) {
+            v.destroyDrawingCache();
+        }
+        v.buildDrawingCache();
+        Bitmap cacheBitmap = v.getDrawingCache();
+        if (cacheBitmap == null) {
+            Log.e(TAG, "failed getViewBitmap(" + v + ")", new RuntimeException());
+            return null;
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(cacheBitmap);
+
+        // Restore the view
+        v.destroyDrawingCache();
+        v.setWillNotCacheDrawing(willNotCache);
+        v.setDrawingCacheBackgroundColor(color);
+
+        return bitmap;
+    }
+
+    private void refreshGallery(File file) {
+        Intent mediaScanIntent = new Intent( Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        mediaScanIntent.setData(Uri.fromFile(file));
+        sendBroadcast(mediaScanIntent);
+    }
+
     public void captureFrame(View view) {
-        cameraFeed.capture();
+        //Bitmap bm = loadBitmapFromView(renderedView);
+        renderedView.scheduleGetPixels();
+
+        //cameraFeed.capture();
     }
 
     public void reset(View view) {

@@ -1,12 +1,14 @@
 package com.augmentedphotography.colorify.CameraActivity;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -30,19 +32,26 @@ public class CameraPreviewSurfaceView extends GLSurfaceView implements GLSurface
     private float selectedHue = 240.0f; //blue: uncommon color
     private float threshold = 360.0f; //unreachable threshold
     private Point selectedPosition = new Point();
+    private boolean capture = false;
+    private ByteBuffer frame;
+    private Bitmap picture;
+    private int width, height;
 
     public CameraPreviewSurfaceView(Context context) {
         this(context, null);
+
     }
 
     public CameraPreviewSurfaceView(Context context, CameraFeed camera) {
         super(context);
+
 
         this.cameraFeed = camera;
         setEGLContextClientVersion(2);
 
         setRenderer(this);
     }
+
 
     @Override
     public void onDrawFrame(GL10 gl) {
@@ -62,6 +71,15 @@ public class CameraPreviewSurfaceView extends GLSurfaceView implements GLSurface
             String msg = "(" + (selectedColor & 0xFF) + ',' + ((selectedColor>>8) & 0xFF) + ',' + ((selectedColor>>16) & 0xFF) + ')';
             Log.d(LOG_TAG,msg);
         }
+        if (capture) {
+            frame = ByteBuffer.allocateDirect(width*height*4);
+            frame.order(ByteOrder.nativeOrder());
+            picture = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            GLES20.glReadPixels(0, 0, getWidth(), getHeight(), GLES20.GL_RGB, GLES20.GL_UNSIGNED_BYTE, frame);
+            picture.copyPixelsFromBuffer(frame);
+            MediaStore.Images.Media.insertImage(getContext().getContentResolver(), picture, "myPicture", "none");
+            capture = false;
+        }
     }
 
     private int getGLPixel(int x, int y) {
@@ -71,10 +89,16 @@ public class CameraPreviewSurfaceView extends GLSurfaceView implements GLSurface
         return output.asIntBuffer().get(0);
     }
 
+    public void scheduleGetPixels() {
+        capture = true;
+    }
+
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         Log.v(LOG_TAG, "Surface Changed");
         GLES20.glViewport(0, 0, width, height);
+        this.width = width;
+        this.height = height;
     }
 
     @Override

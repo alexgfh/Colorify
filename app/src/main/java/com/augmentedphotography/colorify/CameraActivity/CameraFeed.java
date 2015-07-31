@@ -1,10 +1,17 @@
 package com.augmentedphotography.colorify.CameraActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
 import android.util.Log;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -17,6 +24,7 @@ public class CameraFeed {
     private boolean running = false;
     private Camera mainCamera;
     private Context context;
+    private static final String TAG = "CameraFeed";
 
     CameraFeed(Context context) {
         this.context = context;
@@ -43,24 +51,81 @@ public class CameraFeed {
     }
 
     void capture() {
+        byte[] buffer = new byte[10000000];
+        mainCamera.addCallbackBuffer(buffer);
         mainCamera.takePicture(new Camera.ShutterCallback() {
             @Override
             public void onShutter() {
             }
-        }, new Camera.PictureCallback() {
+        },
+           rawCallback,jpegCallback
+           /*new Camera.PictureCallback() {
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
-                /*int w = camera.getParameters().getPictureSize().width;
+                int w = camera.getParameters().getPictureSize().width;
                 int h = camera.getParameters().getPictureSize().height;
+
                 Bitmap bm = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
                 bm.copyPixelsFromBuffer(ByteBuffer.wrap(data));
                 MediaStore.Images.Media.insertImage(context.getContentResolver(), bm, "myPicture", "none");
-                */
+
                 //preview stops after taking a picture
                 mainCamera.startPreview();
             }
-        }, null
+        }*/
         );
+    }
+    Camera.PictureCallback rawCallback = new Camera.PictureCallback() {
+        public void onPictureTaken(byte[] data, Camera camera) {
+            //			 Log.d(TAG, "onPictureTaken - raw");
+        }
+    };
+
+    Camera.PictureCallback jpegCallback = new Camera.PictureCallback() {
+        public void onPictureTaken(byte[] data, Camera camera) {
+            new SaveImageTask().execute(data);
+            mainCamera.startPreview();
+            Log.d(TAG, "onPictureTaken - jpeg");
+        }
+    };
+    private void refreshGallery(File file) {
+        Intent mediaScanIntent = new Intent( Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        mediaScanIntent.setData(Uri.fromFile(file));
+        context.sendBroadcast(mediaScanIntent);
+    }
+
+
+    private class SaveImageTask extends AsyncTask<byte[], Void, Void> {
+
+        @Override
+        protected Void doInBackground(byte[]... data) {
+            FileOutputStream outStream = null;
+
+            // Write to SD Card
+            try {
+                File sdCard = Environment.getExternalStorageDirectory();
+                File dir = new File (Environment.getExternalStorageDirectory() + "/" + android.os.Environment.DIRECTORY_DCIM + "/camtest");
+                dir.mkdirs();
+
+                String fileName = String.format("%d.jpg", System.currentTimeMillis());
+                File outFile = new File(dir, fileName);
+
+                outStream = new FileOutputStream(outFile);
+                outStream.write(data[0]);
+                outStream.flush();
+                outStream.close();
+                refreshGallery(outFile);
+                Log.d(TAG, "onPictureTaken - wrote bytes: " + data.length + " to " + outFile.getAbsolutePath());
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+            }
+            return null;
+        }
+
     }
 
     void stop() {
