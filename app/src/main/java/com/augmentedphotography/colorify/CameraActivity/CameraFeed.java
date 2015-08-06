@@ -25,12 +25,14 @@ public class CameraFeed {
     private Camera mainCamera;
     private Context context;
     private static final String TAG = "CameraFeed";
+    private SurfaceTexture surface;
 
     CameraFeed(Context context) {
         this.context = context;
     }
 
     void start(SurfaceTexture surface) {
+        this.surface = surface;
         Log.v(LOG_TAG, "Starting Camera");
 
         try {
@@ -48,6 +50,10 @@ public class CameraFeed {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    void resume() {
+        this.start(surface);
     }
 
     void capture() {

@@ -1,10 +1,12 @@
 package com.augmentedphotography.colorify.CameraActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
+import android.net.Uri;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -36,6 +38,7 @@ public class CameraPreviewSurfaceView extends GLSurfaceView implements GLSurface
     private ByteBuffer frame;
     private Bitmap picture;
     private int width, height;
+    private Context context;
 
     public CameraPreviewSurfaceView(Context context) {
         this(context, null);
@@ -45,7 +48,7 @@ public class CameraPreviewSurfaceView extends GLSurfaceView implements GLSurface
     public CameraPreviewSurfaceView(Context context, CameraFeed camera) {
         super(context);
 
-
+        this.context = context;
         this.cameraFeed = camera;
         setEGLContextClientVersion(2);
 
@@ -75,7 +78,11 @@ public class CameraPreviewSurfaceView extends GLSurfaceView implements GLSurface
             picture = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
             GLES20.glReadPixels(0, 0, getWidth(), getHeight(), GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, frame);
             picture.copyPixelsFromBuffer(frame);
-            MediaStore.Images.Media.insertImage(getContext().getContentResolver(), picture, "myPicture", "none");
+            String savedImageUrl = MediaStore.Images.Media.insertImage(getContext().getContentResolver(), picture, "myPicture", "none");
+            Intent mediaScanIntent = new Intent( Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            mediaScanIntent.setData(Uri.parse(savedImageUrl));
+            context.sendBroadcast(mediaScanIntent);
+            Log.e(LOG_TAG, "File path:" + savedImageUrl);
             capture = false;
         }
     }

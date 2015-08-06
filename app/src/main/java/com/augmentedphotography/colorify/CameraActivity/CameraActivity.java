@@ -146,6 +146,12 @@ public class CameraActivity extends Activity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        cameraFeed.resume();
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         cameraFeed.stop();
