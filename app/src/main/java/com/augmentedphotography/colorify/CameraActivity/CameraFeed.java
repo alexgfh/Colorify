@@ -127,6 +127,9 @@ public class CameraFeed {
         }
 
     }
+    public Camera getCamera() {
+        return mainCamera;
+    }
 
     void stop() {
         if (running) {

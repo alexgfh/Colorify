@@ -59,8 +59,6 @@ public class CameraPreviewSurfaceView extends GLSurfaceView implements GLSurface
         mSurface.updateTexImage();
         mSurface.getTransformMatrix(mtx);
 
-        //TODO: Make UI for selecting threshold
-
         directVideo.draw(selectedHue / 360.0f, threshold / 360.0f, mtx);
         if (reselectColor) {
             selectedColor = getGLPixel(selectedPosition.x, selectedPosition.y);
@@ -75,7 +73,7 @@ public class CameraPreviewSurfaceView extends GLSurfaceView implements GLSurface
             frame = ByteBuffer.allocateDirect(width*height*4);
             frame.order(ByteOrder.nativeOrder());
             picture = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-            GLES20.glReadPixels(0, 0, getWidth(), getHeight(), GLES20.GL_RGB, GLES20.GL_UNSIGNED_BYTE, frame);
+            GLES20.glReadPixels(0, 0, getWidth(), getHeight(), GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, frame);
             picture.copyPixelsFromBuffer(frame);
             MediaStore.Images.Media.insertImage(getContext().getContentResolver(), picture, "myPicture", "none");
             capture = false;
@@ -108,6 +106,8 @@ public class CameraPreviewSurfaceView extends GLSurfaceView implements GLSurface
         directVideo = new DirectVideo(texture);
         //TODO: try single-buffer mode
         mSurface = new SurfaceTexture(texture /*,true*/);
+        //TODO: create MediaRecorder here
+
         cameraFeed.start(mSurface);
     }
 
