@@ -90,7 +90,10 @@ public class CameraPreviewSurfaceView extends GLSurfaceView implements GLSurface
     private int getGLPixel(int x, int y) {
         ByteBuffer output = ByteBuffer.allocateDirect(4);
         output.order(ByteOrder.nativeOrder());
-        GLES20.glReadPixels(x, y, 1, 1, GLES20.GL_RGB, GLES20.GL_UNSIGNED_BYTE, output);
+
+        int error = GLES20.glGetError();
+        GLES20.glReadPixels(x, y, 1, 1, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, output);
+        int error2 = GLES20.glGetError();
         return output.asIntBuffer().get(0);
     }
 
