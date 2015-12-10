@@ -65,7 +65,7 @@ public class DirectVideo {
                     "  float difference = abs(hsv.x - reference_hue);\n" +
                     "  difference = min(difference, -difference+1.0);\n" +
                     "  if (difference > threshold) {\n" +
-                    "    gl_FragColor = vec4(vec3(hsv.z), 1.0);\n" + //grayscale
+                    "    gl_FragColor = vec4(vec3(0.2126*frag.r + 0.7152*frag.g + 0.0722*frag.b), 1.0);\n" + //grayscale
                     "  }\n" +
                     "  else {\n" +
                     "    gl_FragColor = vec4(frag, 1.0);\n" + //unchanged
