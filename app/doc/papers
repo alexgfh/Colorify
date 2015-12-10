@@ -1,0 +1,8 @@
+Perceptual evaluation, evaluation with human surveys of different rgb -> grayscale conversions.
+http://cadik.posvete.cz/color_to_gray_evaluation/cadik08perceptualEvaluation.pdf
+
+Best conversion on the paper, "Decolorize".
+http://www.eyemaginary.com/Rendering/TurnColorsGray.pdf
+Complex algorithm.
+
+Probably compromise on second place, CIE Y; simple conversion, like luminance.
