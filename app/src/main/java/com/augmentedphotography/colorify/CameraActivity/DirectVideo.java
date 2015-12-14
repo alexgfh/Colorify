@@ -59,12 +59,6 @@ public class DirectVideo {
                     "  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);\n" +
                     "  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);\n" +
                     "}\n" +
-                    "vec3 hsv2rgb(vec3 c)\n" +
-                    "{\n" +
-                    "  vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);\n" +
-                    "  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);\n" +
-                    "  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);\n" +
-                    "}\n" +
                     "luma_coeff = vec3(0.2126, 0.7152, 0.0722)\n" +
                     "gamma = 2.2\n" +
                     "void main() {\n" +
