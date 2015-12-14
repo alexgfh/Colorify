@@ -92,6 +92,7 @@ public class CameraPreviewSurfaceView extends GLSurfaceView implements GLSurface
         output.order(ByteOrder.nativeOrder());
 
         int error = GLES20.glGetError();
+        //TODO: experiment picking a 2x2~5x5 block and returning the average pixel
         GLES20.glReadPixels(x, y, 1, 1, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, output);
         int error2 = GLES20.glGetError();
         return output.asIntBuffer().get(0);
