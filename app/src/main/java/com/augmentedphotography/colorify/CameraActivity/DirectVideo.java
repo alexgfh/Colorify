@@ -68,7 +68,7 @@ public class DirectVideo {
                     "  difference = min(difference, -difference+1.0);\n" +
                     "    if (difference > threshold) {\n" + //grayscale
                     "    linear = pow(frag.rgb, gamma)\n" +
-                    "    luma = dot(luma, linear)\n" +
+                    "    luma = dot(luma_coeff, linear)\n" +
                     "    gamma_compressed = pow(linear, 1.0/gamma)\n" +
                     "    gl_FragColor = vec4(gamma_compressed, 1.0);\n" +
                     "  }\n" +
