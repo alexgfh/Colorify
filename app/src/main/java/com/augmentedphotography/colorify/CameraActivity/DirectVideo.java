@@ -59,30 +59,30 @@ public class DirectVideo {
                     "  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);\n" +
                     "  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);\n" +
                     "}\n" +
-                    "luma_coeff = vec3(0.2126, 0.7152, 0.0722)\n" +
-                    "gamma = 2.2\n" +
                     "void main() {\n" +
                     "  vec3 frag = texture2D(s_texture, textureCoordinate).xyz;\n" +
                     "  vec3 hsv = rgb2hsv(frag);\n" +
+                    "  vec3 luma_coeff = vec3(0.2126, 0.7152, 0.0722);\n" +
+                    "  float gamma = 2.2;\n" +
                     "  float difference = abs(hsv.x - reference_hue);\n" +
                     "  difference = min(difference, -difference+1.0);\n" +
                     "    if (difference > threshold) {\n" + //grayscale
-                    "    linear = pow(frag.rgb, gamma)\n" +
-                    "    luma = dot(luma_coeff, linear)\n" +
-                    "    gamma_compressed = pow(linear, 1.0/gamma)\n" +
-                    "    gl_FragColor = vec4(gamma_compressed, 1.0);\n" +
+                    "      vec3 linear = pow(frag, vec3(gamma));\n" +
+                    "      float luma = dot(vec3(luma_coeff), linear);\n" +
+                    "      float gamma_compressed = pow(luma, 1.0/gamma);\n" +
+                    "    gl_FragColor = vec4(vec3(gamma_compressed), 1.0);\n" +
                     "  }\n" +
                     "  else {\n" +
                     "    gl_FragColor = vec4(frag, 1.0);\n" + //unchanged
                     "  }\n" +
-                    "  /* branchless alternative:\n" +
+                   /* "  /* branchless alternative:\n" +
                     "  colored = vec4(frag, 1.0);\n" +
-                    "  linear = pow(frag.rgb, gamma)\n"
+                    "  linear = pow(frag.rgb, gamma)\n" +
                     "  luma = dot(luma_coeff, linear)\n" +
                     "  gamma_compressed = pow(linear, 1.0/gamma)\n" +
                     "  grayed = vec4(gamma_compressed, 1.0);\n" +
                     "  gl_FragColor = step(colored, grayed, step(threshold, difference))\n" +
-                    "  *\\ \n" +
+                    "  *\\ \n" +*/
                     "}\n";
     private final int mProgram;
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex

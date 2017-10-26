@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.net.Uri;
@@ -78,6 +79,9 @@ public class CameraPreviewSurfaceView extends GLSurfaceView implements GLSurface
             picture = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
             GLES20.glReadPixels(0, 0, getWidth(), getHeight(), GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, frame);
             picture.copyPixelsFromBuffer(frame);
+            Matrix matrix = new Matrix();
+            matrix.postScale(1,-1);
+            picture = Bitmap.createBitmap(picture, 0, 0, width, height, matrix, true);
             String savedImageUrl = MediaStore.Images.Media.insertImage(getContext().getContentResolver(), picture, "myPicture", "none");
             Intent mediaScanIntent = new Intent( Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
             mediaScanIntent.setData(Uri.parse(savedImageUrl));
