@@ -45,6 +45,12 @@ public class CameraActivity extends Activity {
         renderedView = new CameraPreviewSurfaceView(this, cameraFeed);
         layout.addView(renderedView, 0);
         setContentView(layout);
+
+        /* TODO: Add ads
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);*/
+
         resetButton = (Button) findViewById(R.id.reset_button);
         thresholdBar = (SeekBar) findViewById(R.id.threshold_bar);
         thresholdBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -165,7 +171,7 @@ public class CameraActivity extends Activity {
         else  if (event.getActionMasked() == MotionEvent.ACTION_UP) {
             Log.d(LOG_TAG,"Up");
         }
-        //TODO: draw view on bitmap to get one pixel
+        //npTODO: draw view on bitmap to get one pixel
         int x = (int)event.getX();
         int y = (int)event.getY();
         //layout.layout(0,0, 1080, 1920);
