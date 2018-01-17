@@ -1,6 +1,6 @@
 package com.augmentedphotography.colorify.CameraActivity;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
@@ -18,28 +18,29 @@ import java.io.IOException;
  * Created by Alex on 5/21/2015.
  */
 
-@SuppressWarnings("deprecation")
-public class CameraFeed {
+
+public class CameraFeed{
     private static String LOG_TAG = "CameraManager";
-    private boolean running = false;
+    public boolean running = false;
     private Camera mainCamera;
-    private Context context;
+    private Activity activity;
     private static final String TAG = "CameraFeed";
     private SurfaceTexture surface;
 
-    CameraFeed(Context context) {
-        this.context = context;
+    CameraFeed(Activity activity) {
+        this.activity = activity;
     }
 
-    void start(SurfaceTexture surface) {
-        this.surface = surface;
+    private void startCamera() {
         Log.v(LOG_TAG, "Starting Camera");
 
         try {
             mainCamera = Camera.open();
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "no camera");
         }
+        catch(Exception e) {
+            Log.e("CameraFeed", e.toString());
+        }
+
         Camera.Parameters cameraParameters = mainCamera.getParameters();
         Log.v(LOG_TAG, cameraParameters.getPreviewSize().width + " x " + cameraParameters.getPreviewSize().height);
 
@@ -52,8 +53,15 @@ public class CameraFeed {
         }
     }
 
+    void start(SurfaceTexture surface) {
+        this.surface = surface;
+        this.startCamera();
+    }
+
     void resume() {
-        this.start(surface);
+
+        if (surface != null)
+            this.startCamera();
     }
 
     void capture() {
@@ -97,8 +105,10 @@ public class CameraFeed {
     private void refreshGallery(File file) {
         Intent mediaScanIntent = new Intent( Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         mediaScanIntent.setData(Uri.fromFile(file));
-        context.sendBroadcast(mediaScanIntent);
+        activity.sendBroadcast(mediaScanIntent);
     }
+
+
 
 
     private class SaveImageTask extends AsyncTask<byte[], Void, Void> {

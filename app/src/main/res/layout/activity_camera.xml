@@ -30,26 +30,28 @@
         android:layout_alignParentStart="true" />
 
     <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/shutter_button"
         style="@style/Widget.AppCompat.Button"
-        android:onClick="captureFrame"
-        android:nestedScrollingEnabled="true"
-        android:contentDescription="@string/take_picture"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:alpha="0.5"
         android:background="@drawable/abc_btn_radio_to_on_mtrl_015"
+        android:backgroundTint="@android:color/white"
         android:clickable="true"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:contentDescription="@string/take_picture"
+        android:nestedScrollingEnabled="true"
+        android:onClick="captureFrame"
+        android:tintMode="src_atop" />
 
     <VerticalSeekBar
+        android:id="@+id/threshold_bar"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:id="@+id/threshold_bar"
-        android:layout_gravity="center_vertical"
-        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical" />
 
 </RelativeLayout>

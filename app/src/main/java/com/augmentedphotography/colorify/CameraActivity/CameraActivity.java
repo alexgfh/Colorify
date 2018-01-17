@@ -1,11 +1,16 @@
 package com.augmentedphotography.colorify.CameraActivity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,7 +27,7 @@ import com.augmentedphotography.colorify.R;
 import java.io.File;
 
 
-public class CameraActivity extends Activity {
+public class CameraActivity extends Activity  implements ActivityCompat.OnRequestPermissionsResultCallback {
     private static final String TAG = "CameraActivity";
     private CameraFeed cameraFeed;
     private CameraPreviewSurfaceView renderedView;
@@ -30,11 +35,48 @@ public class CameraActivity extends Activity {
     private SeekBar thresholdBar;
     private RelativeLayout layout;
 
+    private final static int MY_PERMISSIONS_REQUEST_CAMERA = 1;
+    private final static int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 2;
+
+
     //TODO: Create hue selector (get color from hue bitmap itself?)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        int permissionCameraCheck = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA);
+
+        int permissionWriteCheck = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCameraCheck != PackageManager.PERMISSION_GRANTED && permissionWriteCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_CAMERA);
+        }
+        else if (permissionCameraCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    MY_PERMISSIONS_REQUEST_CAMERA);
+        }
+        else if (permissionWriteCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+        }
+        if (permissionCameraCheck == PackageManager.PERMISSION_GRANTED) {
+            permittedCamera = true;
+            setupView();
+        }
+        if (permissionWriteCheck == PackageManager.PERMISSION_GRANTED) {
+            permittedWrite = true;
+        }
+
+
+    }
+
+    private void setupView() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -152,15 +194,47 @@ public class CameraActivity extends Activity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if(permittedCamera && !cameraFeed.running)
+            cameraFeed.resume();
+    }
+    private boolean permittedCamera = false;
+    private boolean permittedWrite = false;
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode == MY_PERMISSIONS_REQUEST_CAMERA) {
+            permittedCamera = true;
+            setupView();
+            if(!cameraFeed.running)
+                cameraFeed.resume();
+        }
+        else if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE) {
+            permittedWrite = true;
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-        cameraFeed.resume();
+
+        Log.e("CameraFeed", "resuming camera");
+        if(cameraFeed!=null && permittedCamera && !cameraFeed.running)
+            cameraFeed.resume();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(cameraFeed!=null && cameraFeed.running)
+            cameraFeed.stop();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        cameraFeed.stop();
+        if(cameraFeed!=null && cameraFeed.running)
+            cameraFeed.stop();
     }
 
     /*@Override
